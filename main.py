@@ -1,8 +1,8 @@
-from athena_lookup import Athena_lookup
 import pandas as pd
 from aws_config import aws_config_credentials
 from aws_batch import AWSBatch
 import yaml
+import os
 
 if __name__ == '__main__':
     ## read config file
@@ -12,7 +12,23 @@ if __name__ == '__main__':
     ## authenticate to AWS
     aws_config_credentials(cfg['credentials_csv_filepath'], cfg['region'], cfg['profile_name'])
 
+
+    # get list of files to translate
+    res = os.popen('aws s3 ls s3://cc-extract/cc-download-problems-sentiment/non_english/').read()
+
+    res = res.split('\n')
+    res = pd.DataFrame([[y for y in x.split(' ') if len(y)>0] for x in res if x != ''], columns=['date', 'time', 'size', 'filename'])
+    res['date'] = pd.to_datetime(res['date'] + ' ' + res['time'])
+    res.drop(columns=['time'], inplace=True)
+    res['crawl'] = res.filename.str.split('_').str[0:-1].str.join(', ')
+    res['batch'] = res.filename.str.split('_').str[-1].str.split('.').str[0].astype(int)
+    res.sort_values(by=['crawl', 'batch'], inplace=True)
+
+    res.to_csv('non_english_filenames.csv', index=False)
+
+
     # available_crawls = pd.read_csv('common-crawls.txt')
+
 
     # crawl_dates = ['-'.join(crawl.split('-')[-2:]) for crawl in cfg['crawls']]
     # result_output_path = cfg['result_output_path'] + '/' + '_'.join(cfg['crawls']) # path in output_bucket to store the downloads in batches

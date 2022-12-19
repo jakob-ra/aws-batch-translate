@@ -10,3 +10,5 @@ pyyaml
 textblob
 nltk
 langdetect
+argostranslate
+langdetect

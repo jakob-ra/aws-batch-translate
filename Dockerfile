@@ -1,12 +1,10 @@
-#FROM bitnami/pytorch:1.13.0
-
 FROM python:3.10.7
 
 USER root
 
 COPY cc-downloader .
 COPY requirements.txt .
-#COPY download_install_argos_models.py .
+COPY download_install_argos_models.py .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
