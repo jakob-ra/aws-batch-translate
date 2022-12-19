@@ -1,0 +1,12 @@
+boto3~=1.24.90
+pandas~=1.5.0
+warcio~=1.7.4
+beautifulsoup4~=4.11.1
+s3fs
+cchardet
+lxml
+awswrangler~=2.17.0
+pyyaml
+textblob
+nltk
+langdetect

@@ -1,0 +1,36 @@
+## AWS
+region: 'us-east-1'
+profile_name: 'default'
+credentials_csv_filepath: 'C:/Users/Jakob/Downloads/jakob-s3-ec2-athena_accessKeys.csv'
+batch_role: 'arn:aws:iam::425352751544:role/cc-download' # role to use for the batch job, needs access to S3, Athena, AmazonElasticContainerRegistryPublic
+
+## input paths
+s3path_url_list: 's3://cc-extract/dataprovider_all_months_only_urls/' # folder where url list is stored, starts with 's3://'
+keywords_path: 'https://github.com/jakob-ra/cc-download-translate/raw/main/keywords.csv' # kewywords to search for in the webpages
+url_keywords_path: 'https://github.com/jakob-ra/cc-download-translate/raw/main/url_keywords.csv' # additionally include subpages with these keywords in the url, specify None if not needed
+topic_keywords_path: 'https://github.com/jakob-ra/cc-download-translate/raw/main/topic_keywords.json' # keywords to search for in the extracted passages to determine the topic
+# note that all keyword files have to accessible from the container so e.g. somewhere in s3 or github (not local)
+
+## output paths
+output_bucket: 'cc-extract' # bucket to store the results
+index_output_path: 'urls_merged_cc' # path in output_bucket to store the index results
+result_output_path: 'cc-download-problems-sentiment' # path in output_bucket to store the downloads in batches
+
+## download settings
+crawls: # crawls to include (can be multiple), for list see https://commoncrawl.org/the-data/get-started/
+  - 'CC-MAIN-2022-21'
+  - 'CC-MAIN-2022-27'
+  - 'CC-MAIN-2022-33'
+  - 'CC-MAIN-2022-40'
+
+n_subpages_per_domain: 20 # maximum number of subpages to download per domain (downloads the n_subpages_per_domain subpages with the shortest url)
+limit_pages_url_keywords: 100 # maximum number of subpages containing a keyword from the url keyword list to download per domain
+
+## batch settings
+image_name: 'public.ecr.aws/r9v1u7o6/cc-download-translate:latest' # docker image to use for the batch job
+batch_size: 10000 # number of subpages to download per batch
+retry_attempts: 3 # number of times to retry a failed download batch
+attempt_duration: 4000 # duration in seconds to wait before retrying to download a batch
+vcpus: 0.25 # number of vcpus per container, possible values: 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256
+memory: 512 # memory in MB per container, possible values: 512, 1024, 2048, 4096, 8192
+
