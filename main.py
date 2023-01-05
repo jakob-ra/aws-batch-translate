@@ -26,6 +26,8 @@ if __name__ == '__main__':
 
     res.to_csv('non_english_filenames.csv', index=False)
 
+    # read sample of files to translate
+    df = pd.read_parquet('s3://cc-extract/cc-download-problems-sentiment/non_english/' + res.filename.iloc[10000])
 
     # available_crawls = pd.read_csv('common-crawls.txt')
 

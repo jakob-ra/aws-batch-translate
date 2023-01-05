@@ -41,11 +41,12 @@ if __name__ == "__main__":
     print(sts.get_caller_identity())
 
     # read cc-index table with warc filenames and byte positions
-    # query = f'SELECT * FROM urls_merged_cc_to_download WHERE partition={partition_n} ORDER BY crawl, url_host_tld, fetch_time OFFSET {batch_n_within_partition*args.batch_size} LIMIT {args.batch_size}'
-    #
-    # df = exponential_backoff(wr.athena.read_sql_query, sql=query, database='ccindex', boto3_session=session)
+    partition_n = batch_n
+    query = f'SELECT * FROM non_english_unique_paragraphs WHERE partition={partition_n} ORDER BY LENGTH(paragraph) OFFSET {0} LIMIT {1000}'
 
-    df = pd.read_parquet('s3://cc-extract/cc-download-problems-sentiment/non_english/2020-05_0.parquet')
+    df = exponential_backoff(wr.athena.read_sql_query, sql=query, database='ccindex', boto3_session=session)
+
+    # df = pd.read_parquet('s3://cc-extract/cc-download-problems-sentiment/non_english/2020-05_0.parquet')
 
     assert len(df) > 1, "Empty input table!"
 
