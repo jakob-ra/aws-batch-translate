@@ -1,18 +1,12 @@
 import pandas as pd
 import boto3
-from warcio.archiveiterator import ArchiveIterator
 import time
-from io import BytesIO
-from bs4 import BeautifulSoup, SoupStrainer
 import argparse
 import awswrangler as wr
 import os
 import json
 from textblob import TextBlob
 from urllib.request import urlopen
-
-from passage_extraction import PassageExtractor
-from problem_classification import ProblemClassifier
 from utils import *
 
 if __name__ == "__main__":
@@ -45,6 +39,11 @@ if __name__ == "__main__":
     query = f'SELECT * FROM non_english_unique_paragraphs WHERE partition={partition_n} ORDER BY LENGTH(paragraph) OFFSET {0} LIMIT {1000}'
 
     df = exponential_backoff(wr.athena.read_sql_query, sql=query, database='ccindex', boto3_session=session)
+
+    query = f'SELECT * FROM non_english_unique_paragraphs WHERE partition={1} ORDER BY LENGTH(paragraph) OFFSET {0} LIMIT {1000}'
+
+    df = wr.athena.read_sql_query(sql=query, database='ccindex', boto3_session=session)
+
 
     # df = pd.read_parquet('s3://cc-extract/cc-download-problems-sentiment/non_english/2020-05_0.parquet')
 
